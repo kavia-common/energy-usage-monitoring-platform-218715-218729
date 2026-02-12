@@ -23,7 +23,7 @@ def _build_dsn() -> str:
     # NOTE: If this fallback is reached, ensure orchestrator sets POSTGRES_* env vars properly.
     user = settings.postgres_user or ""
     password = settings.postgres_password or ""
-    host = "localhost"
+    host = settings.postgres_host or "localhost"
     port = settings.postgres_port or "5432"
     db = settings.postgres_db or ""
     auth = f"{user}:{password}@" if user or password else ""

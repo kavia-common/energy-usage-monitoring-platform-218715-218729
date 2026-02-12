@@ -16,6 +16,7 @@ class Settings:
     postgres_user: str | None
     postgres_password: str | None
     postgres_db: str | None
+    postgres_host: str | None
     postgres_port: str | None
 
     jwt_secret: str
@@ -30,6 +31,9 @@ class Settings:
     def from_env() -> "Settings":
         # DB env vars come from the database container contract:
         # POSTGRES_URL, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT
+        #
+        # Optional (but common) additions:
+        # POSTGRES_HOST (and compatibility aliases DB_HOST).
         #
         # CORS env var compatibility:
         # - preferred: CORS_ALLOW_ORIGINS (comma-separated) or "*" for dev
@@ -48,7 +52,8 @@ class Settings:
             postgres_user=os.getenv("POSTGRES_USER"),
             postgres_password=os.getenv("POSTGRES_PASSWORD"),
             postgres_db=os.getenv("POSTGRES_DB"),
-            postgres_port=os.getenv("POSTGRES_PORT"),
+            postgres_host=os.getenv("POSTGRES_HOST") or os.getenv("DB_HOST"),
+            postgres_port=os.getenv("POSTGRES_PORT") or os.getenv("DB_PORT"),
             jwt_secret=jwt_secret,
             jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
             jwt_exp_minutes=int(os.getenv("JWT_EXP_MINUTES", "10080")),  # 7 days
