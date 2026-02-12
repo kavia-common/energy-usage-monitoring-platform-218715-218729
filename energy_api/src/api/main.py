@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import Depends, FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -37,12 +39,16 @@ app = FastAPI(
     openapi_tags=openapi_tags,
 )
 
+_allowed_methods = os.getenv("ALLOWED_METHODS")
+_allowed_headers = os.getenv("ALLOWED_HEADERS")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_allow_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    # Compatibility with deployments that provide explicit CORS allowlists.
+    allow_methods=[m.strip() for m in _allowed_methods.split(",") if m.strip()] if _allowed_methods else ["*"],
+    allow_headers=[h.strip() for h in _allowed_headers.split(",") if h.strip()] if _allowed_headers else ["*"],
 )
 
 

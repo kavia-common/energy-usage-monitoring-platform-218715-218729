@@ -30,7 +30,13 @@ class Settings:
     def from_env() -> "Settings":
         # DB env vars come from the database container contract:
         # POSTGRES_URL, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT
-        cors_raw = os.getenv("CORS_ALLOW_ORIGINS", "*")
+        #
+        # CORS env var compatibility:
+        # - preferred: CORS_ALLOW_ORIGINS (comma-separated) or "*" for dev
+        # - compatibility: ALLOWED_ORIGINS (already used by some deployments)
+        cors_raw = os.getenv("CORS_ALLOW_ORIGINS")
+        if cors_raw is None:
+            cors_raw = os.getenv("ALLOWED_ORIGINS", "*")
 
         jwt_secret = os.getenv("JWT_SECRET")
         if not jwt_secret:
